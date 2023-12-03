@@ -7,9 +7,9 @@ import requests
 scrapes = {}    #url: scrape-object
 
 class Scrape:
-    def __init__(self, soupe=None, text=None):
-        self.soup = None
-        self.text = None
+    def __init__(self, soup=None, text=None):
+        self.soup = soup
+        self.text = text
     
     def get_soup(self):
         return self.soup
