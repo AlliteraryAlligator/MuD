@@ -11,7 +11,7 @@ def search(url, file_name):
     results = r.json()
     with open(file_name, 'w') as fp:
         json.dump(results, fp)
-    return results
+    return True
 
 
 def get_titles(file_name):
