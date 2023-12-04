@@ -6,6 +6,7 @@ from mine import search
 from mine import get_date_of_publication
 from scrape import scrape_page
 from scrape import Scrape
+from clean import clean_text
 import pandas as pd
 import csv
 
@@ -14,6 +15,8 @@ URL = "https://www.googleapis.com/customsearch/v1?key="+API_KEY+"&cx=13d6598f189
 RESULTS_PATH = "./results/"
 SEARCH_FILE_NAME = "search_results.json"
 SCRAPE_FILE_NAME = "raw_scrape.csv"
+CLEAN_FILE_NAME = "clean_scrape.csv"
+ERROR_FILE_NAME = "errors.txt"
 
 
 def get_articles(query):
@@ -26,7 +29,7 @@ def get_articles(query):
 
 
 def scrape_articles():
-    links_and_dates = get_date_of_publication(RESULTS_PATH+SEARCH_FILE_NAME)
+    links_and_dates = get_date_of_publication(RESULTS_PATH+SEARCH_FILE_NAME, RESULTS_PATH+ERROR_FILE_NAME)
     links = links_and_dates.keys()  #chronologically sorted old->new
     
     scrapes = []
@@ -39,6 +42,19 @@ def scrape_articles():
     df = pd.DataFrame(scrapes, columns=['document', 'publication_date'])
     df.to_csv(RESULTS_PATH+SCRAPE_FILE_NAME, index=False)
 
+def clean_articles():
+    raw_df = pd.read_csv(RESULTS_PATH+SCRAPE_FILE_NAME)
+
+    cleaned_articles = []
+
+    for i in range(len(raw_df)):
+        cleaned = clean_text(raw_df['document'][i])
+        cleaned_articles.append((cleaned, raw_df['publication_date'][i]))
+    
+    clean_df = pd.DataFrame(cleaned_articles, columns=['document', 'publication_date'])
+    clean_df.to_csv(RESULTS_PATH+CLEAN_FILE_NAME, index=False)
+
+
 if __name__=="__main__":
     # all constants
     # writing csv files
@@ -47,8 +63,9 @@ if __name__=="__main__":
     # read mined data
     # then call scrape on mined data
     query = "venezuelan+elections+news"
-    #get_articles(query)
+    get_articles(query)
     scrape_articles()
+    clean_articles()
     print("hello")
 
     
