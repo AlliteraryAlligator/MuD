@@ -7,6 +7,7 @@ from mine import get_date_of_publication
 from scrape import scrape_page
 from scrape import Scrape
 from clean import clean_text
+from summarize import summarize
 import pandas as pd
 import csv
 
@@ -17,6 +18,7 @@ SEARCH_FILE_NAME = "search_results.json"
 SCRAPE_FILE_NAME = "raw_scrape.csv"
 CLEAN_FILE_NAME = "clean_scrape.csv"
 ERROR_FILE_NAME = "errors.txt"
+CLAIM_MAP_FILE_NAME = "claim_map.csv"
 
 
 def get_articles(query):
@@ -54,6 +56,12 @@ def clean_articles():
     clean_df = pd.DataFrame(cleaned_articles, columns=['document', 'publication_date'])
     clean_df.to_csv(RESULTS_PATH+CLEAN_FILE_NAME, index=False)
 
+def summarize_docs():
+    df = pd.DataFrame(columns=['summary_claim', 'contradicts', 'supports', 'dnm', 'contradicts_len', 'supports_len', 'dnm_len'])
+    df.to_csv(RESULTS_PATH+CLAIM_MAP_FILE_NAME, index=False)
+
+    summarize(RESULTS_PATH+CLEAN_FILE_NAME, RESULTS_PATH+CLAIM_MAP_FILE_NAME)
+
 
 if __name__=="__main__":
     # all constants
@@ -63,9 +71,10 @@ if __name__=="__main__":
     # read mined data
     # then call scrape on mined data
     query = "venezuelan+elections+news"
-    get_articles(query)
-    scrape_articles()
-    clean_articles()
+    #get_articles(query)
+    #scrape_articles()
+    #clean_articles()
+    summarize_docs()
     print("hello")
 
     
