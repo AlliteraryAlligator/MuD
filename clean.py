@@ -16,7 +16,7 @@ def get_extraneous_text(text):
     client = OpenAI()
 
     response = client.chat.completions.create(
-    model="gpt-4",
+    model="gpt-3.5-turbo-16k",
     messages=[
         {"role": "user", "content": "Given the following, which sentences are irrelevant to the main point of the article? Use a hyphen and newline to separate the list of sentences." + text}
     ]
@@ -33,7 +33,16 @@ def remove_extraneous_text(text):
         cleaned_text = cleaned_text.replace(item, '')
     return cleaned_text
 
-def clean_text(text):
+def clip(text, threshold=300):
+    words = text.split(" ")
+    if len(words)>threshold:
+        text = " ".join(words[:threshold])
+    
+    return text
+
+def clean_text(text, date):
     newlines_removed = remove_newlines(text)
-    cleaned_text = remove_extraneous_text(newlines_removed)
-    return cleaned_text
+    #cleaned_text = remove_extraneous_text(newlines_removed)
+    cleaned_text = clip(newlines_removed)
+    date_header = "Publication date: "+date+"\n"
+    return date_header+cleaned_text
